@@ -1,7 +1,7 @@
 import prisma from "../config/prisma.js";
 
 export const savePipelineRun = async (data) => {
-    return await prisma.pipelineRun.create({
+    return await prisma.pipelineRun.upsert({
         data: {
             workflowId: data.workflowId,
             repository: data.repository,
