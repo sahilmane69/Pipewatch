@@ -1,3 +1,4 @@
+import prisma from "../config/prisma.js";
 export const savePipelineRun = async (data) => {
     return await prisma.pipelineRun.upsert({
         where: {
