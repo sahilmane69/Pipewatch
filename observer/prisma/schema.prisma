@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model PipelineRun {
+  id         String   @id @default(cuid())
+  workflowId Int?
+  repository String
+  workflow   String
+  branch     String
+  status     String
+  conclusion String?
+  url        String?
+  createdAt  DateTime @default(now())
+}

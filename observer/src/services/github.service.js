@@ -1,11 +1,13 @@
 export const parseWorkflowRun = (payload) => {
+    const run = payload.workflow_run;
+
     return {
-        id: payload.workflow_run.id,
-        name: payload.workflow_run.name,
-        status: payload.workflow_run.status,
-        conclusion: payload.workflow_run.conclusion,
-        branch: payload.workflow_run.head_branch,
+        workflowId: run.id,
         repository: payload.repository.full_name,
-        url: payload.workflow_run.html_url
+        workflow: run.name,
+        branch: run.head_branch,
+        status: run.status,
+        conclusion: run.conclusion,
+        url: run.html_url,
     };
 };

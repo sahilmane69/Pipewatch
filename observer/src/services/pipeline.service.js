@@ -1,13 +1,15 @@
-export const processPipelineEvent = (payload) => {
+import prisma from "../config/prisma.js";
 
-    const event = {
-        repository: payload.repository?.full_name || "Unknown",
-        branch: payload.ref || "Unknown",
-        status: payload.status || "running",
-        receivedAt: new Date().toISOString()
-    };
-
-    console.log(event);
-
-    return event;
+export const savePipelineRun = async (data) => {
+    return await prisma.pipelineRun.create({
+        data: {
+            workflowId: data.workflowId,
+            repository: data.repository,
+            workflow: data.workflow,
+            branch: data.branch,
+            status: data.status,
+            conclusion: data.conclusion,
+            url: data.url,
+        },
+    });
 };
