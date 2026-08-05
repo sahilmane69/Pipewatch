@@ -10,7 +10,7 @@ datasource db {
 
 model PipelineRun {
   id         String   @id @default(cuid())
-  workflowId Int?
+  workflowId BigInt?
   repository String
   workflow   String
   branch     String
