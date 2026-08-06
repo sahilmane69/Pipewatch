@@ -8,22 +8,24 @@ export const getAllPipelines = async (req, res) => {
             },
         });
 
-        const response = pipelines.map((pipeline) => ({
-            ...pipeline,
-            workflowId: pipeline.workflowId
-                ? pipeline.workflowId.toString()
-                : null,
-        }));
-
-        return res.status(200).json(response);
+        return res.json(
+            JSON.parse(
+                JSON.stringify(
+                    pipelines,
+                    (_, value) =>
+                        typeof value === "bigint"
+                            ? value.toString()
+                            : value
+                )
+            )
+        );
 
     } catch (error) {
         console.error(error);
 
         return res.status(500).json({
             success: false,
-            message: "Failed to fetch pipelines",
-            error: error.message,
+            message: error.message,
         });
     }
 };
