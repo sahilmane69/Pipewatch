@@ -148,40 +148,6 @@ export default function Home() {
     setSelectedRepo("All");
   };
 
-  // Trigger simulated new run
-  const handleTriggerRun = () => {
-    const repos = repositories.length > 0 ? repositories : ["pipewatch/observer", "pipewatch/dashboard"];
-    const workflows = ["CI / Unit Tests", "Deploy to Production", "Security Audit", "Docker Build"];
-    const branches = ["main", "feature/telemetry-v2", "fix/db-leak"];
-
-    const randomRepo = repos[Math.floor(Math.random() * repos.length)];
-    const randomWorkflow = workflows[Math.floor(Math.random() * workflows.length)];
-    const randomBranch = branches[Math.floor(Math.random() * branches.length)];
-
-    const newRun: PipelineRun = {
-      id: `run-${Math.floor(1000 + Math.random() * 9000)}`,
-      workflowId: `${Date.now()}`,
-      repository: randomRepo,
-      workflow: randomWorkflow,
-      branch: randomBranch,
-      status: "Running",
-      conclusion: null,
-      url: `https://github.com/sahilmane69/Pipewatch/actions/runs/${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      durationSec: 14,
-      commitHash: Math.random().toString(36).substring(2, 9),
-      commitMessage: `ci: trigger workflow run #${Math.floor(Math.random() * 100)}`,
-      author: "dev-user",
-      steps: [
-        { name: "Set up runner environment", status: "success", durationSec: 2 },
-        { name: "Checkout repository", status: "success", durationSec: 3 },
-        { name: "Run test suite", status: "running", durationSec: 9 },
-      ],
-    };
-
-    setPipelines((prev) => [newRun, ...prev]);
-  };
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-zinc-800 selection:text-zinc-100">
       {/* Top Bar Header */}
@@ -190,7 +156,6 @@ export default function Home() {
         isRefreshing={isRefreshing}
         autoRefresh={autoRefresh}
         setAutoRefresh={setAutoRefresh}
-        onTriggerRun={handleTriggerRun}
       />
 
       {/* Main Dashboard Layout */}
