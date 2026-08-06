@@ -34,9 +34,7 @@ export default function Home() {
     try {
       const res = await api.get("/pipelines");
       if (Array.isArray(res.data) && res.data.length > 0) {
-        // Normalize backend data structure
         const normalized: PipelineRun[] = res.data.map((item: any, idx: number) => {
-          // Normalize status representation
           const rawStatus = (item.status || "").toLowerCase();
           const rawConclusion = (item.conclusion || "").toLowerCase();
           
@@ -75,11 +73,9 @@ export default function Home() {
         });
         setPipelines(normalized);
       } else {
-        // Fallback to initial mock pipelines if API returns empty array
-        setPipelines(INITIAL_MOCK_PIPELINES);
+        setPipelines((prev) => (prev.length > 0 ? prev : INITIAL_MOCK_PIPELINES));
       }
     } catch (err) {
-      // API offline or error, fallback to rich mock data
       setPipelines((prev) => (prev.length > 0 ? prev : INITIAL_MOCK_PIPELINES));
     } finally {
       setIsLoading(false);
@@ -112,17 +108,14 @@ export default function Home() {
   // Filtered pipeline list
   const filteredPipelines = useMemo(() => {
     return pipelines.filter((pipeline) => {
-      // Status filter
       if (statusFilter !== "All" && pipeline.status !== statusFilter) {
         return false;
       }
 
-      // Repository filter
       if (selectedRepo !== "All" && pipeline.repository !== selectedRepo) {
         return false;
       }
 
-      // Search query filter
       if (searchQuery.trim() !== "") {
         const query = searchQuery.toLowerCase();
         const matchesRepo = pipeline.repository.toLowerCase().includes(query);
@@ -157,15 +150,13 @@ export default function Home() {
 
   // Trigger simulated new run
   const handleTriggerRun = () => {
-    const repos = ["pipewatch/observer", "pipewatch/dashboard", "pipewatch/auth-service", "pipewatch/database"];
-    const workflows = ["CI / Unit Tests", "Deploy to Staging", "Security Audit", "Release Build"];
-    const branches = ["main", "feature/telemetry-v2", "fix/memory-leak"];
-    const authors = ["sahilmane", "alex-dev", "kate-ops"];
+    const repos = repositories.length > 0 ? repositories : ["pipewatch/observer", "pipewatch/dashboard"];
+    const workflows = ["CI / Unit Tests", "Deploy to Production", "Security Audit", "Docker Build"];
+    const branches = ["main", "feature/telemetry-v2", "fix/db-leak"];
 
     const randomRepo = repos[Math.floor(Math.random() * repos.length)];
     const randomWorkflow = workflows[Math.floor(Math.random() * workflows.length)];
     const randomBranch = branches[Math.floor(Math.random() * branches.length)];
-    const randomAuthor = authors[Math.floor(Math.random() * authors.length)];
 
     const newRun: PipelineRun = {
       id: `run-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -177,15 +168,14 @@ export default function Home() {
       conclusion: null,
       url: `https://github.com/sahilmane69/Pipewatch/actions/runs/${Date.now()}`,
       createdAt: new Date().toISOString(),
-      durationSec: 12,
+      durationSec: 14,
       commitHash: Math.random().toString(36).substring(2, 9),
-      commitMessage: `feat: trigger build run #${Math.floor(Math.random() * 100)}`,
-      author: randomAuthor,
+      commitMessage: `ci: trigger workflow run #${Math.floor(Math.random() * 100)}`,
+      author: "dev-user",
       steps: [
-        { name: "Set up job runner", status: "success", durationSec: 3 },
-        { name: "Checkout repository", status: "success", durationSec: 2 },
-        { name: "Execute pipeline task", status: "running", durationSec: 7 },
-        { name: "Publish status webhook", status: "queued", durationSec: 0 },
+        { name: "Set up runner environment", status: "success", durationSec: 2 },
+        { name: "Checkout repository", status: "success", durationSec: 3 },
+        { name: "Run test suite", status: "running", durationSec: 9 },
       ],
     };
 
@@ -193,7 +183,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-zinc-800 selection:text-zinc-100">
       {/* Top Bar Header */}
       <Header
         onRefresh={() => fetchPipelines(true)}
@@ -204,7 +194,7 @@ export default function Home() {
       />
 
       {/* Main Dashboard Layout */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6 space-y-5">
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
@@ -254,15 +244,15 @@ export default function Home() {
       />
 
       {/* Clean Minimal Footer */}
-      <footer className="border-t border-zinc-900 bg-zinc-950 py-6 px-4 text-center text-xs text-zinc-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-zinc-900 bg-zinc-950 py-4 px-4 text-center text-xs text-zinc-500">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-zinc-400">Pipewatch</span>
+            <span className="font-medium text-zinc-400">Pipewatch</span>
             <span>•</span>
-            <span>DevOps CI/CD Observer</span>
+            <span>Pipeline Monitor</span>
           </div>
           <p className="text-zinc-600">
-            Real-time pipeline monitoring & status telemetry dashboard
+            DevOps CI/CD pipeline observer
           </p>
         </div>
       </footer>
