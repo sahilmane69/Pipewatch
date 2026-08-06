@@ -141,6 +141,17 @@ export default function Home() {
     return { total, success, failed, running, queued, successRate };
   }, [pipelines]);
 
+  // Counts map for tab badges
+  const statusCounts = useMemo(() => {
+    return {
+      All: pipelines.length,
+      Success: pipelines.filter((p) => p.status === "Success").length,
+      Failed: pipelines.filter((p) => p.status === "Failed").length,
+      Running: pipelines.filter((p) => p.status === "Running").length,
+      Queued: pipelines.filter((p) => p.status === "Queued").length,
+    };
+  }, [pipelines]);
+
   // Reset all filters
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -183,6 +194,7 @@ export default function Home() {
               onResetFilters={handleResetFilters}
               totalFilteredCount={filteredPipelines.length}
               totalCount={pipelines.length}
+              statusCounts={statusCounts}
             />
 
             {/* Pipeline Data Table / Empty State */}
